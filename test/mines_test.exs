@@ -15,11 +15,11 @@ defmodule MinesTest do
 
   describe "Testing left_click" do
     test "Left click with valid coordinates should return :ok" do
-      assert Mines.left_click(2, 4) == {:ok, "Result."}
+      assert Mines.left_click(%Coordinate{x: 2, y: 4}) == {:ok, "Result."}
     end
 
     test "Left click with invalid coordinates should return :err" do
-      assert Mines.left_click(22, 4) == {:err, "Invalid input."}
+      assert Mines.left_click(%Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
     end
   end
 end

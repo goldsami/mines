@@ -26,18 +26,18 @@ defmodule Mines do
   Left click on field. Coordinates should be in range from 1 to @board_size
 
   ## Examples
-      iex> Mines.left_click(2, 3)
+      iex> Mines.left_click(%Coordinate{x: 2, y: 3})
       {:ok, "Result."}
 
-      iex> Mines.left_click(1, 44)
+      iex> Mines.left_click(%Coordinate{x: 1, y: 44})
       {:err, "Invalid input."}
 
-      iex> Mines.left_click(11, 4)
+      iex> Mines.left_click(%Coordinate{x: 11, y: 4})
       {:err, "Invalid input."}
   """
-  def left_click(x, y) when x in 1..8 and y in 1..8 do
+  def left_click(coordinate) when coordinate.x in 1..8 and coordinate.y in 1..8 do
     {:ok, "Result."}
   end
 
-  def left_click(_, _), do: {:err, "Invalid input."}
+  def left_click(_), do: {:err, "Invalid input."}
 end
