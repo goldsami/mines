@@ -35,9 +35,13 @@ defmodule Mines do
       iex> Mines.left_click(%Coordinate{x: 11, y: 4})
       {:err, "Invalid input."}
   """
-  def left_click(coordinate) when coordinate.x in 1..8 and coordinate.y in 1..8 do
+  def left_click(coordinate, game_settings \\ %GameSettings{})
+
+  def left_click(coordinate, game_settings)
+      when coordinate.x in 1..game_settings.board_size and
+             coordinate.y in 1..game_settings.board_size do
     {:ok, "Result."}
   end
 
-  def left_click(_), do: {:err, "Invalid input."}
+  def left_click(_, _), do: {:err, "Invalid input."}
 end
