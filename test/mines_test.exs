@@ -2,14 +2,41 @@ defmodule MinesTest do
   use ExUnit.Case
   doctest Mines
 
-  describe "Testing game board" do
-    test "Generate field with random mines but without mine on input coords" do
-      assert Enum.count(
-               Mines.generate_field(%Coordinate{x: 1, y: 1}, %GameSettings{
-                 board_size: 3,
-                 mines_quantity: 3
-               })
-             ) == 9
+  describe "Testing game init" do
+    test "Write settings to agent" do
+      Mines.init_game(%GameSettings{board_size: 2, mines_quantity: 2})
+      assert Agent.get(:game_settings, & &1) == %GameSettings{board_size: 2, mines_quantity: 2}
+    end
+
+    test "Generate default field" do
+      Mines.init_game(%GameSettings{board_size: 2, mines_quantity: 2})
+
+      assert Agent.get(:game_field, & &1) == [
+               %FieldCell{
+                 coordinate: %Coordinate{x: 1, y: 1},
+                 mines_around: 0,
+                 status: :closed,
+                 has_mine: false
+               },
+               %FieldCell{
+                 coordinate: %Coordinate{x: 1, y: 2},
+                 mines_around: 0,
+                 status: :closed,
+                 has_mine: false
+               },
+               %FieldCell{
+                 coordinate: %Coordinate{x: 2, y: 1},
+                 mines_around: 0,
+                 status: :closed,
+                 has_mine: false
+               },
+               %FieldCell{
+                 coordinate: %Coordinate{x: 2, y: 2},
+                 mines_around: 0,
+                 status: :closed,
+                 has_mine: false
+               }
+             ]
     end
   end
 

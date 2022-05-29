@@ -3,7 +3,7 @@ defmodule FieldCell do
   Cell of Mines field
   """
   @enforce_keys [:coordinate]
-  defstruct [:coordinate, has_mine: false, is_opened: false]
+  defstruct [:coordinate, status: :closed, mines_around: 0, has_mine: false]
 end
 
 defmodule Coordinate do
