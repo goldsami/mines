@@ -59,13 +59,88 @@ defmodule Mines do
     List.flatten(cells)
   end
 
-  defp fill_game_field(ignore_cell) do
-    # get_game_field()
-    # TODO
+  defp fill_game_field(ignore_coord) do
+    game_field = get_game_field()
+    cells_to_fill = get_random_cells(game_field, get_game_settings().mines_quantity, ignore_coord)
+
+    fill_cells_with_bombs(game_field, cells_to_fill)
+    |> fill_cells_with_mines_around_count()
+    |> update_game_field()
+  end
+
+  defp get_random_cells(game_field, take_quantity, ignore_coord) do
+    game_field
+    |> Enum.filter(fn cell ->
+      cell.coordinate.x != ignore_coord.x && cell.coordinate.y != ignore_coord.y
+    end)
+    |> Enum.shuffle()
+    |> Enum.take(take_quantity)
+  end
+
+  defp fill_cells_with_bombs(game_field, cells_to_fill) do
+    Enum.map(game_field, fn cell ->
+      cond do
+        Enum.member?(cells_to_fill, cell) -> %FieldCell{cell | has_mine: true}
+        true -> cell
+      end
+    end)
+  end
+
+  defp fill_cells_with_mines_around_count(game_field) do
+    Enum.map(game_field, fn cell ->
+      %FieldCell{cell | mines_around: count_mines_around_cell(game_field, cell.coordinate)}
+    end)
+  end
+
+  defp count_mines_around_cell(game_field, current_coords) do
+    get_neighbour_cells(game_field, current_coords)
+    |> count_mines_of_cells()
+  end
+
+  defp get_neighbour_cells(game_field, current_coords) do
+    Enum.filter(game_field, fn cell ->
+      cond do
+        cell.coordinate.x == current_coords.x - 1 && cell.coordinate.y == current_coords.y - 1 ->
+          true
+
+        cell.coordinate.x == current_coords.x - 1 && cell.coordinate.y == current_coords.y ->
+          true
+
+        cell.coordinate.x == current_coords.x - 1 && cell.coordinate.y == current_coords.y + 1 ->
+          true
+
+        cell.coordinate.x == current_coords.x && cell.coordinate.y == current_coords.y - 1 ->
+          true
+
+        cell.coordinate.x == current_coords.x && cell.coordinate.y == current_coords.y + 1 ->
+          true
+
+        cell.coordinate.x == current_coords.x + 1 && cell.coordinate.y == current_coords.y - 1 ->
+          true
+
+        cell.coordinate.x == current_coords.x + 1 && cell.coordinate.y == current_coords.y ->
+          true
+
+        cell.coordinate.x == current_coords.x + 1 && cell.coordinate.y == current_coords.y + 1 ->
+          true
+
+        true ->
+          false
+      end
+    end)
+  end
+
+  defp count_mines_of_cells(cells) do
+    Enum.filter(cells, fn cell -> cell.has_mine end)
+    |> Enum.count()
   end
 
   defp get_game_field() do
     Agent.get(:game_field, & &1)
+  end
+
+  defp update_game_field(game_field) do
+    Agent.update(:game_field, fn _ -> game_field end)
   end
 
   defp get_game_settings() do
