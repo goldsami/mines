@@ -13,10 +13,3 @@ defmodule Coordinate do
   @enforce_keys [:x, :y]
   defstruct [:x, :y]
 end
-
-defmodule GameSettings do
-  @moduledoc """
-  Game settings like board size and mines count.
-  """
-  defstruct board_size: 8, mines_quantity: 10
-end
