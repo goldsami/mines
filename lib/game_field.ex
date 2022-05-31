@@ -98,6 +98,20 @@ defmodule GameField do
     |> update_game_field()
   end
 
+  @doc """
+  Clears game field from store
+
+  ## Examples
+      iex> Agent.start_link(fn -> [] end, name: :game_field)
+      iex> GameField.crear_game_field()
+      :ok
+      iex> Process.whereis(:game_field)
+      nil
+  """
+  def crear_game_field() do
+    Agent.stop(@game_field_store_name)
+  end
+
   defp get_random_cells(game_field, take_quantity, ignore_coord) do
     game_field
     |> Enum.filter(fn cell ->

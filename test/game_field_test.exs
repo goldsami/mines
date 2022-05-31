@@ -78,4 +78,11 @@ defmodule GameFieldTest do
              }
            ]
   end
+
+  test "Clears game field from store" do
+    Agent.start_link(fn -> [] end, name: :game_field)
+    GameField.crear_game_field()
+
+    assert Process.whereis(:game_field) == nil
+  end
 end
