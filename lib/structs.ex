@@ -1,6 +1,6 @@
 defmodule FieldCell do
   @moduledoc """
-  Cell of Mines field
+  Cell of mines field struct
   """
   @enforce_keys [:coordinate]
   defstruct [:coordinate, status: :closed, mines_around: 0, has_mine: false]
