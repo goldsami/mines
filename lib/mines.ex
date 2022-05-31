@@ -22,7 +22,23 @@ defmodule Mines do
     game_field
   end
 
+  @doc """
+  Clears game field and settings
+
+  ## Examples
+      iex> Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+      iex> Agent.start_link(fn -> [] end, name: :game_field)
+      iex> Mines.finish_game()
+      :ok
+      iex> Process.whereis(:game_settings)
+      nil
+      iex> Process.whereis(:game_field)
+      nil
+  """
   def finish_game() do
+    GameField.crear_game_field()
+    GameSettings.crear_game_settings()
+    :ok
   end
 
   @doc """

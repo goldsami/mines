@@ -42,6 +42,17 @@ defmodule MinesTest do
     end
   end
 
+  describe "Testing game reseting" do
+    test "Clears settings and game field from store" do
+      Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+      Agent.start_link(fn -> [] end, name: :game_field)
+      Mines.finish_game()
+
+      assert Process.whereis(:game_settings) == nil
+      assert Process.whereis(:game_field) == nil
+    end
+  end
+
   describe "Testing left_click" do
     test "Left click with valid coordinates should return :ok" do
       assert Mines.left_click(%Coordinate{x: 2, y: 1}) == {:ok}
