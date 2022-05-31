@@ -20,3 +20,10 @@ defmodule GameSettings do
   """
   defstruct board_size: 3, mines_quantity: 3
 end
+
+defmodule GameState do
+  @moduledoc """
+  Game state struct
+  """
+  defstruct is_initialized: false, game_started: false
+end

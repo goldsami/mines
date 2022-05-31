@@ -13,10 +13,13 @@ defmodule Mines do
       %GameSettings{board_size: 1, mines_quantity: 0}
       iex> Agent.get(:game_field, fn state -> state end)
       [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}]
+      iex> Agent.get(:game_state, fn state -> state end)
+      %GameState{}
 
   """
   def init_game(game_settings \\ %GameSettings{}) do
     Agent.start_link(fn -> game_settings end, name: :game_settings)
+    Agent.start_link(fn -> %GameState{} end, name: :game_state)
     game_field = GameField.generate_game_field(game_settings)
     Agent.start_link(fn -> game_field end, name: :game_field)
     game_field
@@ -27,6 +30,7 @@ defmodule Mines do
 
   ## Examples
       iex> Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+      iex> Agent.start_link(fn -> %GameState{} end, name: :game_state)
       iex> Agent.start_link(fn -> [] end, name: :game_field)
       iex> Mines.finish_game()
       :ok
@@ -34,10 +38,13 @@ defmodule Mines do
       nil
       iex> Process.whereis(:game_field)
       nil
+      iex> Process.whereis(:game_state)
+      nil
   """
   def finish_game() do
     Agent.stop(:game_field)
     Agent.stop(:game_settings)
+    Agent.stop(:game_state)
     :ok
   end
 

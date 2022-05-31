@@ -8,6 +8,15 @@ defmodule MinesTest do
       assert Agent.get(:game_settings, & &1) == %GameSettings{board_size: 2, mines_quantity: 2}
     end
 
+    test "Write game state to agent" do
+      Mines.init_game()
+
+      assert Agent.get(:game_state, & &1) == %GameState{
+               is_initialized: false,
+               game_started: false
+             }
+    end
+
     test "Generate default field" do
       generated_field = [
         %FieldCell{
@@ -43,13 +52,15 @@ defmodule MinesTest do
   end
 
   describe "Testing game reseting" do
-    test "Clears settings and game field from store" do
+    test "Clears settings, game state and game field from store" do
       Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
       Agent.start_link(fn -> [] end, name: :game_field)
+      Agent.start_link(fn -> %GameState{} end, name: :game_state)
       Mines.finish_game()
 
       assert Process.whereis(:game_settings) == nil
       assert Process.whereis(:game_field) == nil
+      assert Process.whereis(:game_state) == nil
     end
   end
 
