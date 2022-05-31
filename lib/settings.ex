@@ -29,4 +29,18 @@ defmodule GameSettings do
   def get_game_settings() do
     Agent.get(@settings_store_name, & &1)
   end
+
+  @doc """
+  Clears game settings
+
+  ## Examples
+      iex> Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+      iex> GameSettings.crear_game_settings()
+      :ok
+      iex> Process.whereis(:game_settings)
+      nil
+  """
+  def crear_game_settings() do
+    Agent.stop(@settings_store_name)
+  end
 end
