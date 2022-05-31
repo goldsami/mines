@@ -8,7 +8,7 @@ defmodule Mines do
 
   ## Examples
       iex> Mines.init_game(%GameSettings{board_size: 1, mines_quantity: 0})
-      {:ok}
+      [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}]
       iex> Agent.get(:game_settings, fn state -> state end)
       %GameSettings{board_size: 1, mines_quantity: 0}
       iex> Agent.get(:game_field, fn state -> state end)
@@ -17,8 +17,12 @@ defmodule Mines do
   """
   def init_game(game_settings \\ %GameSettings{}) do
     GameSettings.write_settings_to_store(game_settings)
-    GameField.generate_game_field(game_settings) |> GameField.write_game_field_to_store()
-    {:ok}
+    game_field = GameField.generate_game_field(game_settings)
+    GameField.write_game_field_to_store(game_field)
+    game_field
+  end
+
+  def finish_game() do
   end
 
   @doc """
@@ -26,7 +30,7 @@ defmodule Mines do
 
   ## Examples
       iex> Mines.left_click(%Coordinate{x: 2, y: 3})
-      {:ok, "Result."}
+      {:ok}
 
       iex> Mines.left_click(%Coordinate{x: 1, y: 44})
       {:err, "Invalid input."}
@@ -39,7 +43,7 @@ defmodule Mines do
   def left_click(coordinate, game_settings)
       when coordinate.x in 1..game_settings.board_size and
              coordinate.y in 1..game_settings.board_size do
-    {:ok, "Result."}
+    {:ok}
   end
 
   def left_click(_, _), do: {:err, "Invalid input."}
