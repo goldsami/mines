@@ -3,8 +3,6 @@ defmodule GameField do
   Module for interaction with game field
   """
 
-  @game_field_store_name :game_field
-
   @doc """
   Generates empty game field
 
@@ -50,18 +48,6 @@ defmodule GameField do
   end
 
   @doc """
-  Writes input field to store
-
-  ## Example
-      iex> {:ok, pid} = GameField.write_game_field_to_store([%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}])
-      iex> Agent.get(pid, fn state -> state end)
-      [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}]
-  """
-  def write_game_field_to_store(game_field) do
-    Agent.start_link(fn -> game_field end, name: @game_field_store_name)
-  end
-
-  @doc """
   Randomly fills game field with bombs and numbers
 
   ## Example
@@ -86,30 +72,22 @@ defmodule GameField do
 
   """
   def fill_game_field(ignore_coord) do
-    game_field = get_game_field()
+    game_field = Agent.get(:game_field, & &1)
 
     cells_to_fill =
-      get_random_cells(game_field, GameSettings.get_game_settings().mines_quantity, ignore_coord)
+      get_random_cells(
+        game_field,
+        Agent.get(:game_settings, & &1).mines_quantity,
+        ignore_coord
+      )
 
     # IO.inspect(cells_to_fill)
 
-    fill_cells_with_bombs(game_field, cells_to_fill)
-    |> fill_cells_with_mines_around_count()
-    |> update_game_field()
-  end
+    new_field =
+      fill_cells_with_bombs(game_field, cells_to_fill)
+      |> fill_cells_with_mines_around_count()
 
-  @doc """
-  Clears game field from store
-
-  ## Examples
-      iex> Agent.start_link(fn -> [] end, name: :game_field)
-      iex> GameField.crear_game_field()
-      :ok
-      iex> Process.whereis(:game_field)
-      nil
-  """
-  def crear_game_field() do
-    Agent.stop(@game_field_store_name)
+    Agent.update(:game_field, fn _ -> new_field end)
   end
 
   defp get_random_cells(game_field, take_quantity, ignore_coord) do
@@ -177,13 +155,5 @@ defmodule GameField do
   defp count_mines_of_cells(cells) do
     Enum.filter(cells, fn cell -> cell.has_mine end)
     |> Enum.count()
-  end
-
-  defp get_game_field() do
-    Agent.get(@game_field_store_name, & &1)
-  end
-
-  defp update_game_field(game_field) do
-    Agent.update(@game_field_store_name, fn _ -> game_field end)
   end
 end

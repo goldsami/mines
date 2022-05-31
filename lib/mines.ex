@@ -16,9 +16,9 @@ defmodule Mines do
 
   """
   def init_game(game_settings \\ %GameSettings{}) do
-    GameSettings.write_settings_to_store(game_settings)
+    Agent.start_link(fn -> game_settings end, name: :game_settings)
     game_field = GameField.generate_game_field(game_settings)
-    GameField.write_game_field_to_store(game_field)
+    Agent.start_link(fn -> game_field end, name: :game_field)
     game_field
   end
 
@@ -36,8 +36,8 @@ defmodule Mines do
       nil
   """
   def finish_game() do
-    GameField.crear_game_field()
-    GameSettings.crear_game_settings()
+    Agent.stop(:game_field)
+    Agent.stop(:game_settings)
     :ok
   end
 

@@ -31,21 +31,6 @@ defmodule GameFieldTest do
            ]
   end
 
-  test "Write field to store" do
-    {:ok, pid} =
-      GameField.write_game_field_to_store([
-        %FieldCell{
-          coordinate: %Coordinate{x: 1, y: 1}
-        }
-      ])
-
-    assert Agent.get(pid, fn state -> state end) == [
-             %FieldCell{
-               coordinate: %Coordinate{x: 1, y: 1}
-             }
-           ]
-  end
-
   test "Randomly fill game field with bombs. Also fill cells with bombs around numbers" do
     Agent.start_link(fn -> %GameSettings{board_size: 2, mines_quantity: 1} end,
       name: :game_settings
@@ -77,12 +62,5 @@ defmodule GameFieldTest do
                has_mine: true
              }
            ]
-  end
-
-  test "Clears game field from store" do
-    Agent.start_link(fn -> [] end, name: :game_field)
-    GameField.crear_game_field()
-
-    assert Process.whereis(:game_field) == nil
   end
 end
