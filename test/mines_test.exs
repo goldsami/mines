@@ -12,7 +12,7 @@ defmodule MinesTest do
       Mines.init_game()
 
       assert Agent.get(:game_state, & &1) == %GameState{
-               is_initialized: false,
+               is_initialized: true,
                game_started: false
              }
     end
@@ -61,6 +61,31 @@ defmodule MinesTest do
       assert Process.whereis(:game_settings) == nil
       assert Process.whereis(:game_field) == nil
       assert Process.whereis(:game_state) == nil
+    end
+  end
+
+  describe "Testing game start" do
+    test "Game start should fill cells with bombs and mines around number" do
+      Agent.start_link(fn -> %GameSettings{board_size: 2, mines_quantity: 1} end,
+        name: :game_settings
+      )
+
+      Agent.start_link(fn -> %GameState{is_initialized: true} end, name: :game_state)
+
+      Agent.start_link(
+        fn ->
+          [
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 2}}
+          ]
+        end,
+        name: :game_field
+      )
+
+      assert Mines.start_game(%Coordinate{x: 1, y: 1}) == [
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 1}, mines_around: 1},
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, has_mine: true}
+             ]
     end
   end
 

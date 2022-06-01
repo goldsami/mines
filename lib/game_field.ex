@@ -81,13 +81,13 @@ defmodule GameField do
         ignore_coord
       )
 
-    # IO.inspect(cells_to_fill)
-
     new_field =
       fill_cells_with_bombs(game_field, cells_to_fill)
       |> fill_cells_with_mines_around_count()
 
     Agent.update(:game_field, fn _ -> new_field end)
+
+    new_field
   end
 
   defp get_random_cells(game_field, take_quantity, ignore_coord) do

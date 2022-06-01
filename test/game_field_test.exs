@@ -46,21 +46,22 @@ defmodule GameFieldTest do
       name: :game_field
     )
 
-    GameField.fill_game_field(%Coordinate{x: 1, y: 1})
+    filled_field = [
+      %FieldCell{
+        coordinate: %Coordinate{x: 1, y: 1},
+        mines_around: 1,
+        status: :closed,
+        has_mine: false
+      },
+      %FieldCell{
+        coordinate: %Coordinate{x: 1, y: 2},
+        mines_around: 0,
+        status: :closed,
+        has_mine: true
+      }
+    ]
 
-    assert Agent.get(:game_field, & &1) == [
-             %FieldCell{
-               coordinate: %Coordinate{x: 1, y: 1},
-               mines_around: 1,
-               status: :closed,
-               has_mine: false
-             },
-             %FieldCell{
-               coordinate: %Coordinate{x: 1, y: 2},
-               mines_around: 0,
-               status: :closed,
-               has_mine: true
-             }
-           ]
+    assert GameField.fill_game_field(%Coordinate{x: 1, y: 1}) == filled_field
+    assert Agent.get(:game_field, & &1) == filled_field
   end
 end

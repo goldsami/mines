@@ -4,7 +4,8 @@ defmodule Mines do
   """
 
   @doc """
-  Creates game field and writes it to Agent. Also writes GameSettings to Agent
+  Creates game field and writes it to the store. Also writes GameSettings to the store.
+  Should be called before each game.
 
   ## Examples
       iex> Mines.init_game(%GameSettings{board_size: 1, mines_quantity: 0})
@@ -14,15 +15,29 @@ defmodule Mines do
       iex> Agent.get(:game_field, fn state -> state end)
       [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}]
       iex> Agent.get(:game_state, fn state -> state end)
-      %GameState{}
+      %GameState{is_initialized: true}
 
   """
   def init_game(game_settings \\ %GameSettings{}) do
     Agent.start_link(fn -> game_settings end, name: :game_settings)
-    Agent.start_link(fn -> %GameState{} end, name: :game_state)
+    Agent.start_link(fn -> %GameState{is_initialized: true} end, name: :game_state)
     game_field = GameField.generate_game_field(game_settings)
     Agent.start_link(fn -> game_field end, name: :game_field)
     game_field
+  end
+
+  @doc """
+  Starts game by clicking on first cell. Should be called after game init.
+
+  ## Examples
+      iex> Agent.start_link(fn -> %GameSettings{board_size: 2, mines_quantity: 1} end, name: :game_settings)
+      iex> Agent.start_link(fn -> %GameState{is_initialized: true} end, name: :game_state)
+      iex> Agent.start_link(fn -> [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}}] end, name: :game_field)
+      iex> Mines.start_game(%Coordinate{x: 1, y: 1})
+      [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}, mines_around: 1}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, has_mine: true}]
+  """
+  def start_game(first_coord) do
+    GameField.fill_game_field(first_coord)
   end
 
   @doc """
