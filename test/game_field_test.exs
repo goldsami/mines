@@ -64,4 +64,17 @@ defmodule GameFieldTest do
     assert GameField.fill_game_field(%Coordinate{x: 1, y: 1}) == filled_field
     assert Agent.get(:game_field, & &1) == filled_field
   end
+
+  test "Open cell of field by coordinate" do
+    assert GameField.open_cell(
+             [
+               %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}},
+               %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}
+             ],
+             %Coordinate{x: 1, y: 1}
+           ) == [
+             %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 1}},
+             %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}
+           ]
+  end
 end

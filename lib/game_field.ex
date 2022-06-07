@@ -90,6 +90,25 @@ defmodule GameField do
     new_field
   end
 
+  @doc """
+  Sets cell status to open
+
+  ## Example
+      iex> GameField.open_cell([%FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}], %Coordinate{x: 1, y: 2})
+      [%FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 2}}]
+  """
+  def open_cell(game_field, cell_coord) do
+    Enum.map(game_field, fn cell ->
+      cond do
+        cell.coordinate.x == cell_coord.x && cell.coordinate.y == cell_coord.y ->
+          %FieldCell{cell | status: :open}
+
+        true ->
+          cell
+      end
+    end)
+  end
+
   defp get_random_cells(game_field, take_quantity, ignore_coord) do
     game_field
     |> Enum.filter(fn cell ->
