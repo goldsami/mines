@@ -83,7 +83,7 @@ defmodule MinesTest do
       )
 
       assert Mines.start_game(%Coordinate{x: 1, y: 1}) == [
-               %FieldCell{coordinate: %Coordinate{x: 1, y: 1}, mines_around: 1},
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 1}, mines_around: 1, status: :open},
                %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, has_mine: true}
              ]
     end

@@ -66,15 +66,21 @@ defmodule GameFieldTest do
   end
 
   test "Open cell of field by coordinate" do
+    Agent.start_link(fn -> [] end, name: :game_field)
+
+    expected_res = [
+      %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 1}},
+      %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}
+    ]
+
     assert GameField.open_cell(
              [
                %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}},
                %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}
              ],
              %Coordinate{x: 1, y: 1}
-           ) == [
-             %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 1}},
-             %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}
-           ]
+           ) == expected_res
+
+    assert Agent.get(:game_field, & &1) == expected_res
   end
 end

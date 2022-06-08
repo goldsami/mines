@@ -34,10 +34,11 @@ defmodule Mines do
       iex> Agent.start_link(fn -> %GameState{is_initialized: true} end, name: :game_state)
       iex> Agent.start_link(fn -> [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}}] end, name: :game_field)
       iex> Mines.start_game(%Coordinate{x: 1, y: 1})
-      [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}, mines_around: 1}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, has_mine: true}]
+      [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}, mines_around: 1, status: :open}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, has_mine: true}]
   """
   def start_game(first_coord) do
     GameField.fill_game_field(first_coord)
+    |> GameField.open_cell(first_coord)
   end
 
   @doc """
