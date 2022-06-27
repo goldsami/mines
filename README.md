@@ -1,21 +1,20 @@
 # Mines
 
-**TODO: Add description**
+Mines game with cli interface
 
-## Installation
+## Running
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `mines` to your list of dependencies in `mix.exs`:
+To start an app run the following command:
 
-```elixir
-def deps do
-  [
-    {:mines, "~> 0.1.0"}
-  ]
-end
+```
+iex -S mix
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/mines>.
+To start new game run: 
+
+```
+MinesConsoleGame.start_game
+```
+
+
 
