@@ -28,6 +28,8 @@ defmodule MinesConsoleGame do
         do: find_cell_by_coord(game_field, %Coordinate{x: x, y: y}) |> write_cell_to_console
       )
     end
+
+    IO.write("\n")
   end
 
   defp find_cell_by_coord(game_field, coord) do
