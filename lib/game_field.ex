@@ -47,6 +47,7 @@ defmodule GameField do
     List.flatten(cells)
   end
 
+  # TODO: add guard on coord
   @doc """
   Randomly fills game field with bombs and numbers
 
@@ -90,6 +91,7 @@ defmodule GameField do
     new_field
   end
 
+  # TODO: add guard on coord
   @doc """
   Sets cell status to open
 

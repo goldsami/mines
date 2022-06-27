@@ -64,6 +64,7 @@ defmodule Mines do
     :ok
   end
 
+  # TODO: replace validation with new validate_coord fn
   @doc """
   Left click on field. Coordinates should be in range from 1 to @board_size
 
@@ -86,4 +87,27 @@ defmodule Mines do
   end
 
   def left_click(_, _), do: {:err, "Invalid input."}
+
+  @doc """
+  Validate if coordination belong to the field
+
+  ## Examples
+      iex> Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
+      iex> Mines.validate_coord(%Coordinate{x: 1, y: 1})
+      :ok
+      iex> Mines.validate_coord(%Coordinate{x: 10, y: 1})
+      {:err, "Invalid input."}
+  """
+  def validate_coord(coordinate) do
+    game_settings = Agent.get(:game_settings, & &1)
+    _validate_coord(coordinate, game_settings)
+  end
+
+  defp _validate_coord(coordinate, game_settings)
+       when coordinate.x in 1..game_settings.board_size and
+              coordinate.y in 1..game_settings.board_size do
+    :ok
+  end
+
+  defp _validate_coord(_, _), do: {:err, "Invalid input."}
 end

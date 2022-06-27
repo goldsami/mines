@@ -98,4 +98,18 @@ defmodule MinesTest do
       assert Mines.left_click(%Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
     end
   end
+
+  describe "Testing coordinate validation" do
+    test "Valid coordinate validation should return :ok" do
+      Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
+
+      assert Mines.validate_coord(%Coordinate{x: 1, y: 1}) == :ok
+    end
+
+    test "Invalid coordinate validation should return :err" do
+      Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
+
+      assert Mines.validate_coord(%Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
+    end
+  end
 end
