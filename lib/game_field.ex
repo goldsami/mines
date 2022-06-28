@@ -47,7 +47,6 @@ defmodule GameField do
     List.flatten(cells)
   end
 
-  # TODO: add guard on coord
   @doc """
   Randomly fills game field with bombs and numbers
 
@@ -91,30 +90,36 @@ defmodule GameField do
     new_field
   end
 
-  # TODO: add guard on coord
   @doc """
   Sets cell status to open
 
   ## Example
+      iex> Agent.start_link(fn -> %GameSettings{board_size: 2, mines_quantity: 1} end, name: :game_settings)
       iex> Agent.start_link(fn -> [] end, name: :game_field)
       iex> GameField.open_cell([%FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}], %Coordinate{x: 1, y: 2})
       [%FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 2}}]
   """
   def open_cell(game_field, cell_coord) do
-    new_field =
-      Enum.map(game_field, fn cell ->
-        cond do
-          cell.coordinate.x == cell_coord.x && cell.coordinate.y == cell_coord.y ->
-            %FieldCell{cell | status: :open}
+    case Mines.validate_coord(cell_coord) do
+      :ok ->
+        new_field =
+          Enum.map(game_field, fn cell ->
+            cond do
+              cell.coordinate.x == cell_coord.x && cell.coordinate.y == cell_coord.y ->
+                %FieldCell{cell | status: :open}
 
-          true ->
-            cell
-        end
-      end)
+              true ->
+                cell
+            end
+          end)
 
-    Agent.update(:game_field, fn _ -> new_field end)
+        Agent.update(:game_field, fn _ -> new_field end)
 
-    new_field
+        new_field
+
+      err ->
+        err
+    end
   end
 
   defp get_random_cells(game_field, take_quantity, ignore_coord) do
