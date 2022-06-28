@@ -65,50 +65,77 @@ defmodule Mines do
     :ok
   end
 
-  # TODO: replace validation with new validate_coord fn
+  # TODO:2 replace validation with new validate_coord fn
   @doc """
   Left click on field. Coordinates should be in range from 1 to @board_size
 
   ## Examples
-      iex> Mines.left_click(%Coordinate{x: 2, y: 3})
-      {:ok}
-
-      iex> Mines.left_click(%Coordinate{x: 1, y: 44})
-      {:err, "Invalid input."}
-
-      iex> Mines.left_click(%Coordinate{x: 11, y: 4})
-      {:err, "Invalid input."}
+      iex>
   """
-  def left_click(coordinate, game_settings \\ %GameSettings{})
+  def left_click(game_field, coordinate) do
+    # TODO:3 add is_win? check
+    case validate_coord(coordinate) do
+      :ok ->
+        :todo
 
-  def left_click(coordinate, game_settings)
-      when coordinate.x in 1..game_settings.board_size and
-             coordinate.y in 1..game_settings.board_size do
-    {:ok}
+      err ->
+        err
+    end
   end
-
-  def left_click(_, _), do: {:err, "Invalid input."}
 
   @doc """
-  Validate if coordination belong to the field
+  Check if player win
 
-  ## Examples
-      iex> Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
-      iex> Mines.validate_coord(%Coordinate{x: 1, y: 1})
-      :ok
-      iex> Mines.validate_coord(%Coordinate{x: 10, y: 1})
-      {:err, "Invalid input."}
+  ## Example
+      iex> Mines.is_win?([%FieldCell{coordinate: %Coordinate{x: 1, y: 1}, status: :open}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, status: :open}, %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}])
+      {:ok, :true}
   """
-  def validate_coord(coordinate) do
-    game_settings = Agent.get(:game_settings, & &1)
-    _validate_coord(coordinate, game_settings)
+  def is_win?([]), do: {:err, "Game field is empty."}
+
+  def is_win?(game_field) do
+    {:ok,
+     Enum.filter(game_field, fn x -> !x.has_mine && x.status == :closed end) |> Enum.count() == 0}
+
+    # Enum.filter(game_field, fn x -> !x.has_mine && x.status == :closed end)
   end
 
-  defp _validate_coord(coordinate, game_settings)
+  @doc """
+  Checks if cell contains mine
+
+  ## Example
+      iex> Mines.is_mine?([%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, has_mine: true}], %Coordinate{x: 1, y: 2})
+      true
+  """
+  def is_mine?(game_field, coord) do
+    Enum.find(game_field, fn cell ->
+      cell.coordinate.x == coord.x && cell.coordinate.y == coord.y && cell.has_mine
+    end)
+    |> case do
+      nil -> false
+      _ -> true
+    end
+  end
+
+  # @doc """
+  # Validate if coordination belong to the field
+
+  # ## Examples
+  #     iex> Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
+  #     iex> Mines.validate_coord(%Coordinate{x: 1, y: 1})
+  #     :ok
+  #     iex> Mines.validate_coord(%Coordinate{x: 10, y: 1})
+  #     {:err, "Invalid input."}
+  # """
+  def validate_coord(coordinate) do
+    game_settings = Agent.get(:game_settings, & &1)
+    validate_coord(coordinate, game_settings)
+  end
+
+  defp validate_coord(coordinate, game_settings)
        when coordinate.x in 1..game_settings.board_size and
               coordinate.y in 1..game_settings.board_size do
     :ok
   end
 
-  defp _validate_coord(_, _), do: {:err, "Invalid input."}
+  defp validate_coord(_, _), do: {:err, "Invalid input."}
 end

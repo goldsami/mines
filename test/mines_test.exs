@@ -90,12 +90,125 @@ defmodule MinesTest do
   end
 
   describe "Testing left_click" do
-    test "Left click with valid coordinates should return :ok" do
-      assert Mines.left_click(%Coordinate{x: 2, y: 1}) == {:ok}
+    test "Left click on cell without mine should open that cell" do
+      Agent.start_link(
+        fn ->
+          [
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1},
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+          ]
+        end,
+        name: :game_field
+      )
+
+      assert Mines.left_click(%Coordinate{x: 1, y: 1}) == :ok
+
+      assert Agent.get(:game_field, & &1) == [
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1, status: :open},
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+             ]
     end
 
-    test "Left click with invalid coordinates should return :err" do
+    test "Left click on mine should return :loose" do
+      Agent.start_link(
+        fn ->
+          [
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 1}, status: :open},
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1},
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+          ]
+        end,
+        name: :game_field
+      )
+
+      assert Mines.left_click(%Coordinate{x: 1, y: 3}) == :loose
+
+      assert_raise RuntimeError do
+        Agent.get(:game_field, & &1)
+      end
+    end
+
+    test "Left click on valid place when it's last non-mine cell should return :win" do
+      Agent.start_link(
+        fn ->
+          [
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, status: :open},
+            %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+          ]
+        end,
+        name: :game_field
+      )
+
+      assert Mines.left_click(%Coordinate{x: 1, y: 1}) == :win
+
+      assert_raise RuntimeError do
+        Agent.get(:game_field, & &1)
+      end
+    end
+
+    test "Left click with invalid coordinates should throw an exception" do
       assert Mines.left_click(%Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
+    end
+  end
+
+  describe "Testing win condition" do
+    test "Game field with all non-mines cells open and all mines cells closed returns true" do
+      assert Mines.is_win?([
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 1}, status: :open},
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, status: :open},
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+             ]) == {:ok, true}
+    end
+
+    test "Game field with some closed non-mines cells returns false" do
+      assert Mines.is_win?([
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 1}, status: :open},
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 2}},
+               %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+             ]) == {:ok, false}
+    end
+
+    test "Empty game field should return an error" do
+      assert Mines.is_win?([]) == {:err, "Game field is empty."}
+    end
+  end
+
+  describe "Testing is_mine? fn" do
+    test "Call with empty game field should return false" do
+      assert Mines.is_mine?([], %Coordinate{x: 1, y: 1}) == false
+    end
+
+    test "Call with coordinate which is not present on game field should return false" do
+      assert Mines.is_mine?(
+               [
+                 %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+                 %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, has_mine: true}
+               ],
+               %Coordinate{x: 11, y: 11}
+             ) == false
+    end
+
+    test "Checking cell without mine should return false" do
+      assert Mines.is_mine?(
+               [
+                 %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+                 %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, has_mine: true}
+               ],
+               %Coordinate{x: 1, y: 1}
+             ) == false
+    end
+
+    test "Checking cell with mine should return true" do
+      assert Mines.is_mine?(
+               [
+                 %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+                 %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, has_mine: true}
+               ],
+               %Coordinate{x: 1, y: 2}
+             ) == true
     end
   end
 
@@ -106,7 +219,7 @@ defmodule MinesTest do
       assert Mines.validate_coord(%Coordinate{x: 1, y: 1}) == :ok
     end
 
-    test "Invalid coordinate validation should return :err" do
+    test "Invalid coordinate validation should throw an exception" do
       Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
 
       assert Mines.validate_coord(%Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
