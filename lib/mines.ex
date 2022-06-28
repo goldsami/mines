@@ -1,4 +1,5 @@
 defmodule Mines do
+  # TODO:(refactor) Use only 'coord' or 'coordination' but not both. Same for 'bomb'/'mine'
   @moduledoc """
   Documentation for `Mines`.
   """

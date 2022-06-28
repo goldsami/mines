@@ -32,6 +32,7 @@ defmodule MinesConsoleGame do
     IO.write("\n")
   end
 
+  # TODO:(refactor) move to Mines
   defp find_cell_by_coord(game_field, coord) do
     Enum.find(game_field, fn cell ->
       cell.coordinate.x == coord.x && cell.coordinate.y == coord.y
