@@ -91,66 +91,68 @@ defmodule MinesTest do
 
   describe "Testing left_click" do
     test "Left click on cell without mine should open that cell" do
-      Agent.start_link(
-        fn ->
-          [
-            %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
-            %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1},
-            %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
-          ]
-        end,
-        name: :game_field
-      )
+      Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
 
-      assert Mines.left_click(%Coordinate{x: 1, y: 1}) == :ok
+      game_field = [
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+      ]
 
-      assert Agent.get(:game_field, & &1) == [
-               %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
-               %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1, status: :open},
-               %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
-             ]
+      updated_game_field = [
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1, status: :open},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+      ]
+
+      Agent.start_link(fn -> game_field end, name: :game_field)
+
+      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 2}) == updated_game_field
+
+      assert Agent.get(:game_field, & &1) == updated_game_field
     end
 
     test "Left click on mine should return :loose" do
-      Agent.start_link(
-        fn ->
-          [
-            %FieldCell{coordinate: %Coordinate{x: 1, y: 1}, status: :open},
-            %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1},
-            %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
-          ]
-        end,
-        name: :game_field
-      )
+      Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+      Agent.start_link(fn -> %GameState{} end, name: :game_state)
 
-      assert Mines.left_click(%Coordinate{x: 1, y: 3}) == :loose
+      game_field = [
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 1}, status: :open},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+      ]
 
-      assert_raise RuntimeError do
-        Agent.get(:game_field, & &1)
-      end
+      Agent.start_link(fn -> game_field end, name: :game_field)
+
+      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 3}) == :loose
+
+      assert Process.whereis(:game_settings) == nil
+      assert Process.whereis(:game_field) == nil
+      assert Process.whereis(:game_state) == nil
     end
 
     test "Left click on valid place when it's last non-mine cell should return :win" do
-      Agent.start_link(
-        fn ->
-          [
-            %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
-            %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, status: :open},
-            %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
-          ]
-        end,
-        name: :game_field
-      )
+      Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+      Agent.start_link(fn -> %GameState{} end, name: :game_state)
 
-      assert Mines.left_click(%Coordinate{x: 1, y: 1}) == :win
+      game_field = [
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, status: :open},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+      ]
 
-      assert_raise RuntimeError do
-        Agent.get(:game_field, & &1)
-      end
+      Agent.start_link(fn -> game_field end, name: :game_field)
+
+      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 1}) == :win
+
+      assert Process.whereis(:game_settings) == nil
+      assert Process.whereis(:game_field) == nil
+      assert Process.whereis(:game_state) == nil
     end
 
     test "Left click with invalid coordinates should throw an exception" do
-      assert Mines.left_click(%Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
+      Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+      assert Mines.left_click([], %Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
     end
   end
 

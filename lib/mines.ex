@@ -65,18 +65,39 @@ defmodule Mines do
     :ok
   end
 
-  # TODO:2 replace validation with new validate_coord fn
   @doc """
   Left click on field. Coordinates should be in range from 1 to @board_size
 
   ## Examples
-      iex>
+      iex> Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+      iex> game_field = [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1}, %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}]
+      iex> Agent.start_link(fn -> game_field end, name: :game_field)
+      iex> Mines.left_click(game_field, %Coordinate{x: 1, y: 2})
+      [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1, status: :open}, %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true} ]
   """
   def left_click(game_field, coordinate) do
-    # TODO:3 add is_win? check
     case validate_coord(coordinate) do
       :ok ->
-        :todo
+        case is_mine?(game_field, coordinate) do
+          true ->
+            finish_game()
+            :loose
+
+          false ->
+            new_field = GameField.open_cell(game_field, coordinate)
+
+            case is_win?(new_field) do
+              {:ok, true} ->
+                finish_game()
+                :win
+
+              {:ok, false} ->
+                new_field
+
+              err ->
+                err
+            end
+        end
 
       err ->
         err
