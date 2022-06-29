@@ -100,13 +100,31 @@ defmodule GameField do
       [%FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 2}}]
   """
   def open_cell(game_field, cell_coord) do
+    set_cell_status(game_field, cell_coord, :open)
+  end
+
+  @doc """
+  Sets cell status to flag
+
+  ## Example
+      iex> Agent.start_link(fn -> %GameSettings{board_size: 2, mines_quantity: 1} end, name: :game_settings)
+      iex> Agent.start_link(fn -> [] end, name: :game_field)
+      iex> GameField.flag_cell([%FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}], %Coordinate{x: 1, y: 2})
+      [%FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :flag, coordinate: %Coordinate{x: 1, y: 2}}]
+  """
+  def flag_cell(game_field, cell_coord) do
+    set_cell_status(game_field, cell_coord, :flag)
+  end
+
+  defp set_cell_status(game_field, cell_coord, new_status) do
     case Mines.validate_coord(cell_coord) do
       :ok ->
+        # TODO: {:ok, _}
         new_field =
           Enum.map(game_field, fn cell ->
             cond do
               cell.coordinate.x == cell_coord.x && cell.coordinate.y == cell_coord.y ->
-                %FieldCell{cell | status: :open}
+                %FieldCell{cell | status: new_status}
 
               true ->
                 cell
