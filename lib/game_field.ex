@@ -118,8 +118,7 @@ defmodule GameField do
 
   defp set_cell_status(game_field, cell_coord, new_status) do
     case Mines.validate_coord(cell_coord) do
-      :ok ->
-        # TODO: {:ok, _}
+      {:ok, _} ->
         new_field =
           Enum.map(game_field, fn cell ->
             cond do

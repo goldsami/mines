@@ -1,5 +1,6 @@
 defmodule Mines do
   # TODO:(refactor) Use only 'coord' or 'coordination' but not both. Same for 'bomb'/'mine'
+  # TODO:(feature) On cell open if it has 0 mines around - open them too
   @moduledoc """
   Documentation for `Mines`.
   """
@@ -77,7 +78,7 @@ defmodule Mines do
   """
   def left_click(game_field, coordinate) do
     case validate_coord(coordinate) do
-      :ok ->
+      {:ok, _} ->
         case is_mine?(game_field, coordinate) do
           true ->
             finish_game()
@@ -137,16 +138,16 @@ defmodule Mines do
     end
   end
 
-  # @doc """
-  # Validate if coordination belong to the field
+  @doc """
+  Validate if coordination belong to the field
 
-  # ## Examples
-  #     iex> Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
-  #     iex> Mines.validate_coord(%Coordinate{x: 1, y: 1})
-  #     :ok
-  #     iex> Mines.validate_coord(%Coordinate{x: 10, y: 1})
-  #     {:err, "Invalid input."}
-  # """
+  ## Examples
+      iex> Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
+      iex> Mines.validate_coord(%Coordinate{x: 1, y: 1})
+      {:ok, %Coordinate{x: 1, y: 1}}
+      iex> Mines.validate_coord(%Coordinate{x: 10, y: 1})
+      {:err, "Invalid input."}
+  """
   def validate_coord(coordinate) do
     game_settings = Agent.get(:game_settings, & &1)
     validate_coord(coordinate, game_settings)
@@ -155,7 +156,7 @@ defmodule Mines do
   defp validate_coord(coordinate, game_settings)
        when coordinate.x in 1..game_settings.board_size and
               coordinate.y in 1..game_settings.board_size do
-    :ok
+    {:ok, coordinate}
   end
 
   defp validate_coord(_, _), do: {:err, "Invalid input."}

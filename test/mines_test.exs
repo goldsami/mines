@@ -218,7 +218,7 @@ defmodule MinesTest do
     test "Valid coordinate validation should return :ok" do
       Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
 
-      assert Mines.validate_coord(%Coordinate{x: 1, y: 1}) == :ok
+      assert Mines.validate_coord(%Coordinate{x: 1, y: 1}) == {:ok, %Coordinate{x: 1, y: 1}}
     end
 
     test "Invalid coordinate validation should throw an exception" do
