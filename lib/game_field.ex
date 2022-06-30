@@ -122,6 +122,7 @@ defmodule GameField do
     end
   end
 
+  # TODO: test case when flag an open cell
   @doc """
   Sets cell status to flag
 
@@ -132,7 +133,10 @@ defmodule GameField do
       [%FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :flag, coordinate: %Coordinate{x: 1, y: 2}}]
   """
   def flag_cell(game_field, cell_coord) do
-    set_cell_status(game_field, cell_coord, :flag)
+    case Mines.find_cell_by_coord(game_field, cell_coord) do
+      %FieldCell{status: :open} -> game_field
+      _ -> set_cell_status(game_field, cell_coord, :flag)
+    end
   end
 
   defp set_cell_status(game_field, cell_coord, new_status) do
