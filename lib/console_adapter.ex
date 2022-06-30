@@ -43,18 +43,11 @@ defmodule MinesConsoleGame do
 
       for(
         x <- 1..game_settings.board_size,
-        do: find_cell_by_coord(game_field, %Coordinate{x: x, y: y}) |> write_cell_to_console
+        do: Mines.find_cell_by_coord(game_field, %Coordinate{x: x, y: y}) |> write_cell_to_console
       )
     end
 
     IO.write("\n")
-  end
-
-  # TODO:(refactor) move to Mines
-  defp find_cell_by_coord(game_field, coord) do
-    Enum.find(game_field, fn cell ->
-      cell.coordinate.x == coord.x && cell.coordinate.y == coord.y
-    end)
   end
 
   defp write_cell_to_console(cell) do

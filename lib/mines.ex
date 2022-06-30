@@ -160,4 +160,11 @@ defmodule Mines do
   end
 
   defp validate_coord(_, _), do: {:err, "Invalid input."}
+
+  # TODO: add tests
+  def find_cell_by_coord(game_field, coord) do
+    Enum.find(game_field, fn cell ->
+      cell.coordinate.x == coord.x && cell.coordinate.y == coord.y
+    end)
+  end
 end
