@@ -107,7 +107,7 @@ defmodule MinesTest do
 
       Agent.start_link(fn -> game_field end, name: :game_field)
 
-      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 2}) == updated_game_field
+      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 2}) == {:ok, updated_game_field}
 
       assert Agent.get(:game_field, & &1) == updated_game_field
     end

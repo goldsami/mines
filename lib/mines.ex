@@ -74,7 +74,7 @@ defmodule Mines do
       iex> game_field = [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1}, %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}]
       iex> Agent.start_link(fn -> game_field end, name: :game_field)
       iex> Mines.left_click(game_field, %Coordinate{x: 1, y: 2})
-      [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1, status: :open}, %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true} ]
+      {:ok, [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1, status: :open}, %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}]}
   """
   def left_click(game_field, coordinate) do
     case validate_coord(coordinate) do
@@ -93,7 +93,7 @@ defmodule Mines do
                 :win
 
               {:ok, false} ->
-                new_field
+                {:ok, new_field}
 
               err ->
                 err
