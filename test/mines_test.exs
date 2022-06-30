@@ -112,7 +112,7 @@ defmodule MinesTest do
       assert Agent.get(:game_field, & &1) == updated_game_field
     end
 
-    test "Left click on mine should return :loose" do
+    test "Left click on mine should return :defeat" do
       Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
       Agent.start_link(fn -> %GameState{} end, name: :game_state)
 
@@ -124,7 +124,7 @@ defmodule MinesTest do
 
       Agent.start_link(fn -> game_field end, name: :game_field)
 
-      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 3}) == :loose
+      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 3}) == :defeat
 
       assert Process.whereis(:game_settings) == nil
       assert Process.whereis(:game_field) == nil

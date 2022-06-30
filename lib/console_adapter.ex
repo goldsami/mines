@@ -25,8 +25,8 @@ defmodule MinesConsoleGame do
       :win ->
         "You win!"
 
-      :loose ->
-        "You loose"
+      :defeat ->
+        "You lost"
 
       {:err, msg} ->
         IO.write("#{msg}\n")

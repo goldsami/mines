@@ -82,7 +82,7 @@ defmodule Mines do
         case is_mine?(game_field, coordinate) do
           true ->
             finish_game()
-            :loose
+            :defeat
 
           false ->
             new_field = GameField.open_cell(game_field, coordinate)
