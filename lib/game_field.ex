@@ -90,17 +90,36 @@ defmodule GameField do
     new_field
   end
 
+  # TODO: add test for 1-arity
   @doc """
   Sets cell status to open
 
   ## Example
       iex> Agent.start_link(fn -> %GameSettings{board_size: 2, mines_quantity: 1} end, name: :game_settings)
       iex> Agent.start_link(fn -> [] end, name: :game_field)
-      iex> GameField.open_cell([%FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}], %Coordinate{x: 1, y: 2})
-      [%FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 2}}]
+      iex> GameField.open_cell([%FieldCell{status: :closed, has_mine: true, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :closed, mines_around: 1, coordinate: %Coordinate{x: 1, y: 2}}], %Coordinate{x: 1, y: 2})
+      [%FieldCell{status: :closed, has_mine: true, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :open, mines_around: 1, coordinate: %Coordinate{x: 1, y: 2}}]
   """
+  def open_cell(cell_coord) do
+    Agent.get(:game_field, & &1) |> open_cell(cell_coord)
+  end
+
   def open_cell(game_field, cell_coord) do
-    set_cell_status(game_field, cell_coord, :open)
+    Mines.find_cell_by_coord(game_field, cell_coord)
+    |> case do
+      %FieldCell{status: :open} ->
+        game_field
+
+      %FieldCell{mines_around: 0} ->
+        set_cell_status(game_field, cell_coord, :open)
+        |> get_neighbour_cells(cell_coord)
+        |> Enum.each(fn cell -> open_cell(cell.coordinate) end)
+
+        Agent.get(:game_field, & &1)
+
+      _ ->
+        set_cell_status(game_field, cell_coord, :open)
+    end
   end
 
   @doc """

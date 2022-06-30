@@ -73,18 +73,44 @@ defmodule GameFieldTest do
       Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
 
       expected_res = [
-        %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 1}},
-        %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}
+        %FieldCell{status: :open, mines_around: 1, coordinate: %Coordinate{x: 1, y: 1}},
+        %FieldCell{status: :closed, has_mine: true, coordinate: %Coordinate{x: 1, y: 2}}
       ]
 
       assert GameField.open_cell(
                [
-                 %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 1}},
-                 %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}
+                 %FieldCell{
+                   status: :closed,
+                   mines_around: 1,
+                   coordinate: %Coordinate{x: 1, y: 1}
+                 },
+                 %FieldCell{status: :closed, has_mine: true, coordinate: %Coordinate{x: 1, y: 2}}
                ],
                %Coordinate{x: 1, y: 1}
              ) == expected_res
 
+      assert Agent.get(:game_field, & &1) == expected_res
+    end
+
+    test "Opening cell without mines around should open neighbor cells too recursively" do
+      Agent.start_link(fn -> [] end, name: :game_field)
+      Agent.start_link(fn -> %GameSettings{board_size: 3} end, name: :game_settings)
+
+      start_field = [
+        %FieldCell{status: :closed, mines_around: 0, coordinate: %Coordinate{x: 1, y: 1}},
+        %FieldCell{status: :closed, mines_around: 0, coordinate: %Coordinate{x: 1, y: 2}},
+        %FieldCell{status: :closed, mines_around: 1, coordinate: %Coordinate{x: 1, y: 3}},
+        %FieldCell{status: :closed, has_mine: true, coordinate: %Coordinate{x: 1, y: 4}}
+      ]
+
+      expected_res = [
+        %FieldCell{status: :open, mines_around: 0, coordinate: %Coordinate{x: 1, y: 1}},
+        %FieldCell{status: :open, mines_around: 0, coordinate: %Coordinate{x: 1, y: 2}},
+        %FieldCell{status: :open, mines_around: 1, coordinate: %Coordinate{x: 1, y: 3}},
+        %FieldCell{status: :closed, has_mine: true, coordinate: %Coordinate{x: 1, y: 4}}
+      ]
+
+      assert GameField.open_cell(start_field, %Coordinate{x: 1, y: 1}) == expected_res
       assert Agent.get(:game_field, & &1) == expected_res
     end
 
