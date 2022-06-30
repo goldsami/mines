@@ -105,6 +105,14 @@ defmodule Mines do
     end
   end
 
+  # TODO: add tests
+  def right_click(game_field, coordinate) do
+    case validate_coord(coordinate) do
+      {:ok, _} -> {:ok, GameField.flag_cell(game_field, coordinate)}
+      err -> err
+    end
+  end
+
   @doc """
   Check if player win
 
