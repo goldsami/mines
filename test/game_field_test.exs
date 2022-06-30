@@ -117,7 +117,7 @@ defmodule GameFieldTest do
     test "Open invalid cell should return an error" do
       Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
 
-      assert GameField.open_cell([], %Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
+      assert GameField.open_cell([], %Coordinate{x: 10, y: 1}) == {:err, "Invalid coordinate."}
     end
   end
 
@@ -145,7 +145,7 @@ defmodule GameFieldTest do
     test "Open invalid cell should return an error" do
       Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
 
-      assert GameField.flag_cell([], %Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
+      assert GameField.flag_cell([], %Coordinate{x: 10, y: 1}) == {:err, "Invalid coordinate."}
     end
   end
 end

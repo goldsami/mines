@@ -150,9 +150,9 @@ defmodule MinesTest do
       assert Process.whereis(:game_state) == nil
     end
 
-    test "Left click with invalid coordinates should throw an exception" do
+    test "Left click with invalid coordinates should return an exception" do
       Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
-      assert Mines.left_click([], %Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
+      assert Mines.left_click([], %Coordinate{x: 10, y: 1}) == {:err, "Invalid coordinate."}
     end
   end
 
@@ -224,7 +224,7 @@ defmodule MinesTest do
     test "Invalid coordinate validation should throw an exception" do
       Agent.start_link(fn -> %GameSettings{board_size: 2} end, name: :game_settings)
 
-      assert Mines.validate_coord(%Coordinate{x: 10, y: 1}) == {:err, "Invalid input."}
+      assert Mines.validate_coord(%Coordinate{x: 10, y: 1}) == {:err, "Invalid coordinate."}
     end
   end
 end

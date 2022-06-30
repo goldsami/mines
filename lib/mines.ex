@@ -146,7 +146,7 @@ defmodule Mines do
       iex> Mines.validate_coord(%Coordinate{x: 1, y: 1})
       {:ok, %Coordinate{x: 1, y: 1}}
       iex> Mines.validate_coord(%Coordinate{x: 10, y: 1})
-      {:err, "Invalid input."}
+      {:err, "Invalid coordinate."}
   """
   def validate_coord(coordinate) do
     game_settings = Agent.get(:game_settings, & &1)
@@ -159,7 +159,7 @@ defmodule Mines do
     {:ok, coordinate}
   end
 
-  defp validate_coord(_, _), do: {:err, "Invalid input."}
+  defp validate_coord(_, _), do: {:err, "Invalid coordinate."}
 
   # TODO: add tests
   def find_cell_by_coord(game_field, coord) do
