@@ -268,4 +268,26 @@ defmodule MinesTest do
       assert Mines.validate_coord(%Coordinate{x: 10, y: 1}) == {:err, "Invalid coordinate."}
     end
   end
+
+  describe "Testing getting cell form field" do
+    test "Should return cell from field by coord" do
+      coord_of_cell_to_find = %Coordinate{x: 1, y: 2}
+      cell_to_find = %FieldCell{coordinate: coord_of_cell_to_find}
+
+      game_field = [
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+        cell_to_find,
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 3}}
+      ]
+
+      assert Mines.find_cell_by_coord(game_field, coord_of_cell_to_find)
+    end
+
+    test "Looking for cell which is not present on game field shuld return nil" do
+      assert Mines.find_cell_by_coord(
+               [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}],
+               %Coordinate{x: 1, y: 2}
+             ) == nil
+    end
+  end
 end

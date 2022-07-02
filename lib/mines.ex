@@ -176,7 +176,13 @@ defmodule Mines do
 
   defp validate_coord(_, _), do: {:err, "Invalid coordinate."}
 
-  # TODO: add tests
+  @doc """
+  Find cell of game field by coord
+
+  ## Example
+      iex> Mines.find_cell_by_coord([%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}}], %Coordinate{x: 1, y: 2})
+      %FieldCell{coordinate: %Coordinate{x: 1, y: 2}}
+  """
   def find_cell_by_coord(game_field, coord) do
     Enum.find(game_field, fn cell ->
       cell.coordinate.x == coord.x && cell.coordinate.y == coord.y
