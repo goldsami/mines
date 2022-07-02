@@ -65,7 +65,7 @@ defmodule MinesTest do
   end
 
   describe "Testing game start" do
-    test "Game start should fill cells with bombs and mines around number" do
+    test "Game start should fill cells with mines and mines around number" do
       Agent.start_link(fn -> %GameSettings{board_size: 2, mines_quantity: 1} end,
         name: :game_settings
       )

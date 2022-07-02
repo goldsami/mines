@@ -1,5 +1,4 @@
 defmodule Mines do
-  # TODO:(refactor) Use only 'coord' or 'coordination' but not both. Same for 'bomb'/'mine'
   @moduledoc """
   Documentation for `Mines`.
   """
@@ -75,16 +74,16 @@ defmodule Mines do
       iex> Mines.left_click(game_field, %Coordinate{x: 1, y: 2})
       {:ok, [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1, status: :open}, %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}]}
   """
-  def left_click(game_field, coordinate) do
-    case validate_coord(coordinate) do
+  def left_click(game_field, coord) do
+    case validate_coord(coord) do
       {:ok, _} ->
-        case is_mine?(game_field, coordinate) do
+        case is_mine?(game_field, coord) do
           true ->
             finish_game()
             {:defeat, GameField.get_opened_field(game_field)}
 
           false ->
-            new_field = GameField.open_cell(game_field, coordinate)
+            new_field = GameField.open_cell(game_field, coord)
 
             case is_win?(new_field) do
               {:ok, true} ->
@@ -114,9 +113,9 @@ defmodule Mines do
       iex> Mines.right_click(game_field, %Coordinate{x: 1, y: 2})
       {:ok, [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, status: :flag}, %FieldCell{coordinate: %Coordinate{x: 1, y: 3}}]}
   """
-  def right_click(game_field, coordinate) do
-    case validate_coord(coordinate) do
-      {:ok, _} -> {:ok, GameField.flag_cell(game_field, coordinate)}
+  def right_click(game_field, coord) do
+    case validate_coord(coord) do
+      {:ok, _} -> {:ok, GameField.flag_cell(game_field, coord)}
       err -> err
     end
   end

@@ -32,7 +32,7 @@ defmodule GameFieldTest do
   end
 
   describe "Test game field filling" do
-    test "Randomly fill game field with bombs. Also fill cells with bombs around numbers" do
+    test "Randomly fill game field with mines. Also fill cells with mines around numbers" do
       Agent.start_link(fn -> %GameSettings{board_size: 2, mines_quantity: 1} end,
         name: :game_settings
       )

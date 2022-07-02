@@ -48,7 +48,7 @@ defmodule GameField do
   end
 
   @doc """
-  Randomly fills game field with bombs and numbers
+  Randomly fills game field with mines and numbers
 
   ## Example
       iex> Agent.start_link(fn -> %GameSettings{board_size: 2, mines_quantity: 1} end, name: :game_settings)
@@ -82,7 +82,7 @@ defmodule GameField do
       )
 
     new_field =
-      fill_cells_with_bombs(game_field, cells_to_fill)
+      fill_cells_with_mines(game_field, cells_to_fill)
       |> fill_cells_with_mines_around_count()
 
     Agent.update(:game_field, fn _ -> new_field end)
@@ -174,7 +174,7 @@ defmodule GameField do
     |> Enum.take(take_quantity)
   end
 
-  defp fill_cells_with_bombs(game_field, cells_to_fill) do
+  defp fill_cells_with_mines(game_field, cells_to_fill) do
     Enum.map(game_field, fn cell ->
       cond do
         Enum.member?(cells_to_fill, cell) -> %FieldCell{cell | has_mine: true}
