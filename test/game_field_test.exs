@@ -159,4 +159,18 @@ defmodule GameFieldTest do
       assert GameField.flag_cell([], %Coordinate{x: 10, y: 1}) == {:err, "Invalid coordinate."}
     end
   end
+
+  describe "Get opened field" do
+    test "Should return game field with all cells opened" do
+      GameField.get_opened_field([
+        %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 1}},
+        %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}},
+        %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 3}}
+      ]) == [
+        %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 1}},
+        %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 2}},
+        %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 3}}
+      ]
+    end
+  end
 end

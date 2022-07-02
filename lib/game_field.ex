@@ -137,7 +137,13 @@ defmodule GameField do
     end
   end
 
-  # TODO: add tests
+  @doc """
+  Get game field with all cells opened
+
+  ## Example
+      iex> GameField.get_opened_field([%FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :closed, coordinate: %Coordinate{x: 1, y: 2}}])
+      [%FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{status: :open, coordinate: %Coordinate{x: 1, y: 2}}]
+  """
   def get_opened_field(game_field) do
     Enum.map(game_field, fn cell -> %FieldCell{cell | status: :open} end)
   end
