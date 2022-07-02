@@ -4,7 +4,7 @@ defmodule MinesConsoleGame do
   """
 
   def start_game() do
-    game_settings = %GameSettings{mines_quantity: 2}
+    game_settings = %GameSettings{mines_quantity: 4, board_size: 5}
 
     Mines.init_game(game_settings)
     |> print_game_field(game_settings)
@@ -17,15 +17,16 @@ defmodule MinesConsoleGame do
 
   defp do_step(game_field, game_settings) do
     with {:ok, command, coord} <- request_action(),
-         # TODO seems that loose is goes in execute command
          {:ok, new_game_field} <- execute_command(game_field, {command, coord}) do
       print_game_field(new_game_field, game_settings)
       do_step(new_game_field, game_settings)
     else
-      :win ->
+      {:win, opened_field} ->
+        print_game_field(opened_field, game_settings)
         "You win!"
 
-      :defeat ->
+      {:defeat, opened_field} ->
+        print_game_field(opened_field, game_settings)
         "You lost"
 
       {:err, msg} ->

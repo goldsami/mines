@@ -1,6 +1,5 @@
 defmodule Mines do
   # TODO:(refactor) Use only 'coord' or 'coordination' but not both. Same for 'bomb'/'mine'
-  # TODO:(feature) On cell open if it has 0 mines around - open them too
   @moduledoc """
   Documentation for `Mines`.
   """
@@ -82,7 +81,7 @@ defmodule Mines do
         case is_mine?(game_field, coordinate) do
           true ->
             finish_game()
-            :defeat
+            {:defeat, GameField.get_opened_field(game_field)}
 
           false ->
             new_field = GameField.open_cell(game_field, coordinate)
@@ -90,7 +89,7 @@ defmodule Mines do
             case is_win?(new_field) do
               {:ok, true} ->
                 finish_game()
-                :win
+                {:win, GameField.get_opened_field(game_field)}
 
               {:ok, false} ->
                 {:ok, new_field}

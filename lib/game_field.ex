@@ -139,6 +139,11 @@ defmodule GameField do
     end
   end
 
+  # TODO: add tests
+  def get_opened_field(game_field) do
+    Enum.map(game_field, fn cell -> %FieldCell{cell | status: :open} end)
+  end
+
   defp set_cell_status(game_field, cell_coord, new_status) do
     case Mines.validate_coord(cell_coord) do
       {:ok, _} ->

@@ -122,9 +122,15 @@ defmodule MinesTest do
         %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
       ]
 
+      opened_field = [
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 1}, status: :open},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, status: :open, mines_around: 1},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, status: :open, has_mine: true}
+      ]
+
       Agent.start_link(fn -> game_field end, name: :game_field)
 
-      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 3}) == :defeat
+      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 3}) == {:defeat, opened_field}
 
       assert Process.whereis(:game_settings) == nil
       assert Process.whereis(:game_field) == nil
@@ -141,9 +147,15 @@ defmodule MinesTest do
         %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
       ]
 
+      opened_field = [
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 1}, status: :open},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, status: :open},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, status: :open, has_mine: true}
+      ]
+
       Agent.start_link(fn -> game_field end, name: :game_field)
 
-      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 1}) == :win
+      assert Mines.left_click(game_field, %Coordinate{x: 1, y: 1}) == {:win, opened_field}
 
       assert Process.whereis(:game_settings) == nil
       assert Process.whereis(:game_field) == nil
