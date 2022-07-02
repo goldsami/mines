@@ -90,7 +90,6 @@ defmodule GameField do
     new_field
   end
 
-  # TODO: add test for 1-arity
   @doc """
   Sets cell status to open
 
@@ -122,7 +121,6 @@ defmodule GameField do
     end
   end
 
-  # TODO: test case when flag an open cell
   @doc """
   Sets cell status to flag
 
