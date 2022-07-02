@@ -104,7 +104,16 @@ defmodule Mines do
     end
   end
 
-  # TODO: add tests
+  @doc """
+  Right click on field. Coordinates should be in range from 1 to @board_size
+
+  ## Examples
+      iex> Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+      iex> game_field = [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 3}}]
+      iex> Agent.start_link(fn -> game_field end, name: :game_field)
+      iex> Mines.right_click(game_field, %Coordinate{x: 1, y: 2})
+      {:ok, [%FieldCell{coordinate: %Coordinate{x: 1, y: 1}}, %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, status: :flag}, %FieldCell{coordinate: %Coordinate{x: 1, y: 3}}]}
+  """
   def right_click(game_field, coordinate) do
     case validate_coord(coordinate) do
       {:ok, _} -> {:ok, GameField.flag_cell(game_field, coordinate)}

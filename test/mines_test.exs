@@ -168,6 +168,35 @@ defmodule MinesTest do
     end
   end
 
+  describe "Testing right" do
+    test "Right click on cell should mark it with a flag" do
+      Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+
+      game_field = [
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+      ]
+
+      updated_game_field = [
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 1}},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 2}, mines_around: 1, status: :flag},
+        %FieldCell{coordinate: %Coordinate{x: 1, y: 3}, has_mine: true}
+      ]
+
+      Agent.start_link(fn -> game_field end, name: :game_field)
+
+      assert Mines.right_click(game_field, %Coordinate{x: 1, y: 2}) == {:ok, updated_game_field}
+
+      assert Agent.get(:game_field, & &1) == updated_game_field
+    end
+
+    test "Right click with invalid coordinates should return an exception" do
+      Agent.start_link(fn -> %GameSettings{} end, name: :game_settings)
+      assert Mines.right_click([], %Coordinate{x: 10, y: 1}) == {:err, "Invalid coordinate."}
+    end
+  end
+
   describe "Testing win condition" do
     test "Game field with all non-mines cells open and all mines cells closed returns true" do
       assert Mines.is_win?([
