@@ -16,5 +16,11 @@ To start new game run:
 MinesConsoleGame.start_game
 ```
 
+## Run tests
+
+```
+mix test
+```
+
 
 
